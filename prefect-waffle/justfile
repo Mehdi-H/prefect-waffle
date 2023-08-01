@@ -1,0 +1,40 @@
+set export
+
+PYTHON_VERSION := "3.11.4"
+
+# ❓ To display this prompts. This will list all available recipes with their documentation
+help:
+    just --list
+
+# ⬇ To install project dependencies
+install:
+    poetry env use "$PYTHON_VERSION"
+    poetry check && poetry install
+
+run file:
+    poetry run python {{file}}
+
+# ▶️ To run the flow described in Prefect documentation
+run-script-flow:
+    just run {{justfile_directory()}}/src/prefect_waffle/script_flow.py
+
+# ❓ To list processes registered in Prefect work pool
+ls-workpool:
+    poetry run prefect work-pool ls
+
+create-process:
+    poetry run prefect work-pool create --type process my-process-pool
+    just ls-workpool
+
+# To start Prefect server locally, a clickable URL of the server will be displayed in the terminal
+start-server:
+    poetry run prefect server start
+
+start-worker:
+    poetry run prefect worker start --pool my-process-pool
+
+deploy:
+    poetry run prefect deploy
+
+ls-prefect-recipes:
+    poetry run prefect project recipes ls
